@@ -1,0 +1,28 @@
+# Unreal Engine 5 .gitignore
+
+# 忽略建構的檔案
+DerivedDataCache/
+Binaries/
+Intermediate/
+Saved/
+Build/
+
+# Visual Studio 2022相關檔案
+.vs/
+*.vsconfig
+*.sln
+*.suo
+*.user
+*.userosscache
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.opendb
+*.VC.VC.opendb
+ipch/
+*.aps
+*.ncb
+*.opendb
+*.cachefile
+*.VC.db-*
+*.rsuser
