@@ -18,4 +18,7 @@ public:
 		AAuraEnemy();
 		virtual void HighlightActor() override;
 		virtual void UnhighlightActor() override;
+
+		UPROPERTY(BlueprintReadOnly)
+		bool bHighlighted = false;
 };

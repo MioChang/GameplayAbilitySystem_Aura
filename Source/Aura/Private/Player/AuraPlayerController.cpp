@@ -5,11 +5,19 @@
 
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Interaction/EnemyInterface.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
 	// player can remote control this pawn
 	bReplicates = true;
+}
+
+void AAuraPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+
+	CursorTrace();
 }
 
 void AAuraPlayerController::BeginPlay()
@@ -56,5 +64,67 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 		// Move the pawn
 		ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
 		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
+	}
+}
+
+void AAuraPlayerController::CursorTrace()
+{
+	FHitResult CursorHit;
+	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+
+	if (!CursorHit.bBlockingHit)
+		return;
+	
+	LastActor = ThisActor;
+	ThisActor = CursorHit.GetActor();
+	
+	/**
+	* Line trace from cursor. There are several scenarios:
+	* A. LastActor is nullptr and ThisActor is nullptr
+	*    - Do nothing
+	* B. LastActor is nullptr and ThisActor is valid
+	*    - Call HighlightActor() on ThisActor
+	* C. LastActor is valid and ThisActor is nullptr
+	*    - Call UnhighlightActor() on LastActor
+	* D. LastActor is valid and ThisActor is valid, but LastActor != ThisActor
+	*    - Call UnhighlightActor() on LastActor and HighlightActor() on ThisActor
+	* E. LastActor is valid and ThisActor is valid, and LastActor == ThisActor
+	*    - Do nothing
+	*/
+
+	if (LastActor == nullptr)
+	{
+		if (ThisActor != nullptr)
+		{
+			// Case B
+			ThisActor->HighlightActor();
+		}
+		else
+		{
+			// Case A
+			return;
+		}
+	}
+	else
+	{
+		if (ThisActor == nullptr)
+		{
+			// Case C
+			LastActor->UnhighlightActor();
+		}
+		else
+		{
+			if (LastActor != ThisActor)
+			{
+				// Case D
+				LastActor->UnhighlightActor();
+				ThisActor->HighlightActor();
+			}
+			else
+			{
+				// Case E
+				return;
+			}
+		}
 	}
 }
