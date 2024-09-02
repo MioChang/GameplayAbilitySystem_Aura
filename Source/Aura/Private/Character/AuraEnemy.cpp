@@ -31,5 +31,9 @@ void AAuraEnemy::UnhighlightActor()
 
 void AAuraEnemy::BeginPlay()
 {
+	Super::BeginPlay();
+
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
